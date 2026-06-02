@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sabin Timalsina — Premium Portfolio Platform
+
+A production-ready personal brand website combining portfolio showcase, learning hub, content management, GitHub integration, and AI assistant.
+
+## Tech Stack
+
+- **Next.js 16** (App Router) + TypeScript
+- **Tailwind CSS 4** + Shadcn-style UI components
+- **Framer Motion** animations
+- **Firebase** (Auth, Firestore, Storage)
+- **React Hook Form** + **Zod**
+- **Recharts** analytics
+- **GitHub API** integration
+
+## Features
+
+- 16 public pages (Home, About, Skills, Projects, Certificates, Achievements, Tutorials, Blog, GitHub Hub, Testimonials, Gallery, Services, Contact)
+- **Chat With Sabin** — portfolio-aware AI assistant
+- Protected **Admin Dashboard** with full CRUD
+- Dark/light mode, glassmorphism, responsive design
+- SEO metadata, Open Graph, JSON-LD structured data
+- Rate limiting & input sanitization on API routes
 
 ## Getting Started
 
-First, run the development server:
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment variables
+
+Copy `.env.example` to `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Fill in Firebase and optional GitHub/OpenAI keys.
+
+### 3. Firebase setup
+
+1. Create a project at [Firebase Console](https://console.firebase.google.com)
+2. Enable **Authentication** → Email/Password
+3. Create an admin user with your email
+4. Enable **Firestore** and **Storage**
+5. Deploy security rules from `docs/FIRESTORE_SCHEMA.md`
+6. Add web app config to `.env.local`
+
+### 4. Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Admin: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Demo mode
 
-## Learn More
+Without Firebase configured, the site runs with **seed data** from `src/data/seed.ts`. Admin CRUD requires Firebase.
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/              # App Router pages & API routes
+├── components/       # UI, layout, feature components
+├── data/             # Seed/fallback data
+├── hooks/            # Custom React hooks
+├── lib/              # Firebase, data layer, utils
+└── types/            # TypeScript interfaces
+docs/
+└── FIRESTORE_SCHEMA.md
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment (Vercel)
 
-## Deploy on Vercel
+1. Push to GitHub
+2. Import project in [Vercel](https://vercel.com)
+3. Add all environment variables from `.env.example`
+4. Deploy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run build
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Customization
+
+- Update `src/lib/constants.ts` for contact info and social links
+- Replace hero image in `HeroSection` component
+- Add CV PDF to `public/cv/sabin-timalsina-cv.pdf`
+- Seed Firestore or use Admin panel to manage content
+
+## License
+
+Private — © Sabin Timalsina

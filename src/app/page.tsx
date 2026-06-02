@@ -1,65 +1,117 @@
+import Link from "next/link";
 import Image from "next/image";
+import { HeroSection } from "@/components/home/hero-section";
+import { StatsSection } from "@/components/home/stats-section";
+import { SectionHeading } from "@/components/shared/section-heading";
+import { ProjectCard } from "@/components/projects/project-card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  getApprovedTestimonials,
+  getCertificates,
+  getProjects,
+  getSettings,
+  getTutorials,
+} from "@/lib/data";
+import { formatDate } from "@/lib/utils";
+import { Star } from "lucide-react";
 
-export default function Home() {
+export default async function HomePage() {
+  const [settings, projects, tutorials, certificates, testimonials] =
+    await Promise.all([
+      getSettings(),
+      getProjects(true),
+      getTutorials(),
+      getCertificates(),
+      getApprovedTestimonials(),
+    ]);
+
+  const featuredTutorials = tutorials.filter((t) => t.featured).slice(0, 3);
+  const featuredCerts = certificates.filter((c) => c.featured).slice(0, 3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <HeroSection subtitle={settings.heroSubtitle} />
+      <StatsSection stats={settings.stats} />
+
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading title="Featured Projects" href="/projects" />
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {projects.slice(0, 3).map((p, i) => (
+              <ProjectCard key={p.id} project={p} index={i} />
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className="py-16 gradient-bg">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading title="Featured Tutorials" href="/tutorials" />
+          <div className="grid gap-6 md:grid-cols-3">
+            {featuredTutorials.map((t) => (
+              <Card key={t.id} className="glass overflow-hidden">
+                {t.thumbnail && (
+                  <div className="relative aspect-video">
+                    <Image src={t.thumbnail} alt={t.title} fill className="object-cover" sizes="400px" />
+                  </div>
+                )}
+                <CardHeader>
+                  <Badge variant="accent">{t.category}</Badge>
+                  <CardTitle className="text-lg">
+                    <Link href={`/tutorials/${t.slug}`}>{t.title}</Link>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-2">{t.description}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">{t.views} views · {t.likes} likes</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="py-16">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading title="Latest Certificates" href="/certificates" />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredCerts.map((c) => (
+              <Card key={c.id} className="glass overflow-hidden group hover:shadow-lg transition-shadow">
+                {c.imageUrl && (
+                  <div className="relative aspect-[4/3]">
+                    <Image src={c.imageUrl} alt={c.title} fill className="object-cover group-hover:scale-105 transition-transform" sizes="400px" />
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle className="text-lg">{c.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground">{c.organization} · {formatDate(c.date)}</p>
+                </CardHeader>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 gradient-bg">
+        <div className="mx-auto max-w-7xl px-4 lg:px-8">
+          <SectionHeading title="What People Say" href="/testimonials" />
+          <div className="grid gap-6 md:grid-cols-2">
+            {testimonials.slice(0, 2).map((t) => (
+              <Card key={t.id} className="glass p-6">
+                <div className="flex gap-1 mb-3">
+                  {Array.from({ length: t.rating }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-muted-foreground italic">&ldquo;{t.message}&rdquo;</p>
+                <p className="mt-4 font-semibold">{t.name}</p>
+                <p className="text-sm text-muted-foreground">{t.occupation}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
