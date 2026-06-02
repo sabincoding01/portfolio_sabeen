@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Download, Mail } from "lucide-react";
-import { GitHubIcon, LinkedInIcon, YouTubeIcon } from "@/components/icons/social-icons";
+import { GitHubIcon, LinkedInIcon } from "@/components/icons/social-icons";
 import { SITE, TYPING_ROLES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { TypingEffect } from "@/components/shared/typing-effect";
@@ -52,8 +52,10 @@ export function HeroSection({ subtitle }: { subtitle?: string }) {
             <a href={SITE.linkedin} target="_blank" rel="noopener noreferrer" className="rounded-full glass p-3 hover:scale-110 transition-transform" aria-label="LinkedIn">
               <LinkedInIcon />
             </a>
-            <a href={SITE.youtube} target="_blank" rel="noopener noreferrer" className="rounded-full glass p-3 hover:scale-110 transition-transform" aria-label="YouTube">
-              <YouTubeIcon />
+            <a href={SITE.twitter} target="_blank" rel="noopener noreferrer" className="rounded-full glass p-3 hover:scale-110 transition-transform" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden>
+                <path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.28 4.28 0 001.88-2.37 8.53 8.53 0 01-2.7 1.03 4.26 4.26 0 00-7.28 3.88A12.1 12.1 0 013 4.9a4.26 4.26 0 001.32 5.69 4.22 4.22 0 01-1.93-.53v.05a4.26 4.26 0 003.42 4.18 4.3 4.3 0 01-1.92.07 4.26 4.26 0 003.98 2.96A8.55 8.55 0 012 19.54a12.07 12.07 0 006.54 1.92c7.85 0 12.14-6.5 12.14-12.13 0-.18-.01-.35-.02-.53A8.67 8.67 0 0024 5.5a8.44 8.44 0 01-2.54.7z" />
+              </svg>
             </a>
           </div>
         </motion.div>
@@ -67,7 +69,7 @@ export function HeroSection({ subtitle }: { subtitle?: string }) {
           <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-30 blur-2xl" />
           <div className="relative aspect-square overflow-hidden rounded-3xl border-4 border-white/20 shadow-2xl dark:border-white/10">
             <Image
-              src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80"
+              src={SITE.image}
               alt={SITE.name}
               fill
               className="object-cover"

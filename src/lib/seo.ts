@@ -46,9 +46,9 @@ export function personJsonLd() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: SITE.name,
-    jobTitle: "Front-End Developer",
+    jobTitle: "Web Developer | Data Analyst | Graphics Designer",
     url: SITE.url,
-    sameAs: [SITE.github, SITE.linkedin, SITE.youtube],
+    sameAs: [SITE.github, SITE.linkedin, SITE.twitter, SITE.instagram],
     email: SITE.email,
   };
 }

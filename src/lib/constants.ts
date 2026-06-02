@@ -1,18 +1,19 @@
 export const SITE = {
   name: "Sabin Timalsina",
-  title: "Front-End Developer | React Developer | Trainer | Content Creator",
+  title: "Web Developer | Data Analyst | Graphics Designer",
   description:
-    "Premium portfolio of Sabin Timalsina — React & Next.js developer, trainer, and content creator building modern web experiences.",
+    "Sabin Timalsina is a web developer, data analyst, and graphics designer building responsive, modern websites and digital experiences.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  email: "sabintimalsina@gmail.com",
-  phone: "+977-98XXXXXXXX",
-  whatsapp: "97798XXXXXXXX",
-  linkedin: "https://linkedin.com/in/sabintimalsina",
-  github: "https://github.com/sabintimalsina",
-  youtube: "https://youtube.com/@sabintimalsina",
-  twitter: "https://twitter.com/sabintimalsina",
+  email: "sabintimalsina74@gmail.com",
+  phone: "+977 9864155993",
+  whatsapp: "9779864155993",
+  linkedin: "https://www.linkedin.com/in/sabin-timalsina-63090831b/",
+  github: "https://github.com/sabincoding01",
+  youtube: "https://x.com/sabin67680?s=21",
+  twitter: "https://x.com/sabin67680?s=21",
+  instagram: "https://www.instagram.com/saveen0?igsh=MXhwcXRmNjJkMGh5dQ%3D%3D&utm_source=qr",
   cvUrl: "/cv/sabin-timalsina-cv.pdf",
-  image: "/images/sabin-profile.jpg",
+  image: "/images/sabin-profile.png",
 } as const;
 
 export const NAV_LINKS = [
@@ -32,10 +33,11 @@ export const NAV_LINKS = [
 ] as const;
 
 export const TYPING_ROLES = [
-  "Front-End Developer",
+  "Web Developer",
+  "Data Analyst",
+  "Graphics Designer",
   "React Developer",
-  "Trainer",
-  "Content Creator",
+  "Front-End Developer",
 ] as const;
 
 export const TUTORIAL_CATEGORIES = [

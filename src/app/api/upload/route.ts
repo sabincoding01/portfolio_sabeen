@@ -1,60 +1,52 @@
 import { NextResponse } from "next/server";
-import { v2 as cloudinary } from "cloudinary";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getFirebaseApp, isFirebaseConfigured } from "@/lib/firebase";
 
 export const runtime = "nodejs";
 
-const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-const cloudKey = process.env.CLOUDINARY_API_KEY;
-const cloudSecret = process.env.CLOUDINARY_API_SECRET;
-
-if (!cloudName || !cloudKey || !cloudSecret) {
-  console.error(
-    "Cloudinary is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.",
-  );
+export async function GET() {
+  return NextResponse.json({ status: "ok", route: "/api/upload" });
 }
-
-cloudinary.config({
-  cloud_name: cloudName,
-  api_key: cloudKey,
-  api_secret: cloudSecret,
-});
 
 export async function POST(request: Request) {
   try {
-    if (!cloudName || !cloudKey || !cloudSecret) {
+    if (!isFirebaseConfigured()) {
       return NextResponse.json(
-        {
-          error:
-            "Cloudinary upload is not configured. Set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.",
-        },
+        { error: "Firebase is not configured." },
         { status: 500 },
       );
     }
 
     const form = await request.formData();
     const file = form.get("file") as Blob | null;
+
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    const filename = String(form.get("filename") ?? `upload_${Date.now()}`);
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    const base64 = buffer.toString("base64");
-    const mime = (file.type as string) || "application/octet-stream";
-    const dataUri = `data:${mime};base64,${base64}`;
 
-    const result = await cloudinary.uploader.upload(dataUri, {
-      folder: "portfolio_images",
-      use_filename: true,
-      unique_filename: true,
-    });
+    const app = getFirebaseApp();
+    if (!app) {
+      return NextResponse.json(
+        { error: "Firebase app not initialized." },
+        { status: 500 },
+      );
+    }
 
-    return NextResponse.json({ url: result.secure_url });
+    const storage = getStorage(app);
+    const path = `uploads/${Date.now()}_${String(form.get("filename") ?? "upload").replace(/[^a-zA-Z0-9.\-_]/g, "_")}`;
+    const fileRef = ref(storage, path);
+
+    await uploadBytes(fileRef, buffer, { contentType: file.type });
+    const downloadUrl = await getDownloadURL(fileRef);
+
+    return NextResponse.json({ url: downloadUrl });
   } catch (err) {
-    console.error("Upload error", err);
+    console.error("Upload error:", err);
     return NextResponse.json(
-      { error: "Upload failed. Check Cloudinary configuration." },
+      { error: "Upload failed. Check Firebase configuration." },
       { status: 500 },
     );
   }

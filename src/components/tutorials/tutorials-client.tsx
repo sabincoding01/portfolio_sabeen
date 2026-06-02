@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Search, Eye, Heart, Play, FileText, BookOpen } from "lucide-react";
@@ -8,6 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TUTORIAL_CATEGORIES } from "@/lib/constants";
+import {
+  getYouTubeEmbedUrl,
+  getYouTubeVideoId,
+  getYouTubeWatchUrl,
+} from "@/lib/utils";
 import type { Tutorial } from "@/types";
 
 const typeIcons = {
@@ -17,10 +22,31 @@ const typeIcons = {
   blog: BookOpen,
 };
 
+function getTutorialThumbnail(tutorial: Tutorial) {
+  if (tutorial.thumbnail) return tutorial.thumbnail;
+  if (tutorial.type === "youtube" && tutorial.videoUrl) {
+    const id = getYouTubeVideoId(tutorial.videoUrl);
+    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+  }
+  return null;
+}
+
+function getTutorialPlayerUrl(tutorial: Tutorial) {
+  if (tutorial.type === "youtube") return null;
+  return tutorial.videoUrl ?? null;
+}
+
+function getTutorialWatchUrl(tutorial: Tutorial) {
+  if (tutorial.type === "youtube") return getYouTubeWatchUrl(tutorial.videoUrl);
+  return tutorial.videoUrl ?? null;
+}
+
 export function TutorialsClient({ tutorials }: { tutorials: Tutorial[] }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [broken, setBroken] = useState<Record<string, boolean>>({});
+  const [embedError, setEmbedError] = useState<Record<string, boolean>>({});
+  const [activeTutorialId, setActiveTutorialId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     return tutorials.filter((t) => {
@@ -62,37 +88,99 @@ export function TutorialsClient({ tutorials }: { tutorials: Tutorial[] }) {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((t, idx) => {
           const Icon = typeIcons[t.type];
+          const thumbnail = getTutorialThumbnail(t);
+          const playerUrl = getTutorialPlayerUrl(t);
+          const watchUrl = getTutorialWatchUrl(t);
+          const canOpen = t.type === "youtube" ? !!watchUrl : !!playerUrl;
+          const isActive = activeTutorialId === t.id && !!playerUrl;
           return (
             <Card
               key={`${t.id ?? t.slug}-${idx}`}
-              className="glass overflow-hidden hover:shadow-lg transition-shadow"
+              className="glass overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:scale-[1.01] hover:shadow-lg cursor-pointer group"
+              onClick={() => {
+                if (t.type === "youtube" && watchUrl) {
+                  window.open(watchUrl, "_blank", "noopener,noreferrer");
+                  return;
+                }
+                if (playerUrl && !embedError[t.id]) {
+                  setActiveTutorialId((current) =>
+                    current === t.id ? null : t.id,
+                  );
+                }
+              }}
             >
-              {t.thumbnail && !broken[t.id] && (
-                <div className="relative aspect-video">
-                  {t.thumbnail.startsWith("blob:") ||
-                  t.thumbnail.startsWith("data:") ? (
-                    // plain img for blob/data URLs
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={t.thumbnail}
-                      alt={t.title}
-                      className="object-cover w-full h-full"
+              {isActive && playerUrl && !embedError[t.id] ? (
+                <div className="relative aspect-video bg-black">
+                  {t.type === "youtube" ? (
+                    <iframe
+                      src={playerUrl}
+                      title={t.title}
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      onError={() =>
+                        setEmbedError((s) => ({ ...s, [t.id]: true }))
+                      }
+                      allowFullScreen
                     />
                   ) : (
-                    <Image
-                      src={t.thumbnail}
-                      alt={t.title}
-                      fill
-                      className="object-cover"
-                      sizes="400px"
-                      onError={() => setBroken((s) => ({ ...s, [t.id]: true }))}
+                    <video
+                      src={playerUrl}
+                      controls
+                      autoPlay
+                      className="h-full w-full object-cover"
                     />
                   )}
                 </div>
-              )}
-              {(!t.thumbnail || broken[t.id]) && (
-                <div className="relative aspect-video flex items-center justify-center bg-muted/20">
-                  <div className="text-muted-foreground">No image</div>
+              ) : isActive && embedError[t.id] ? (
+                <div className="relative aspect-video flex flex-col items-center justify-center gap-3 bg-black p-4 text-center text-sm text-white">
+                  <p>Video cannot be played inline here.</p>
+                  <a
+                    href={watchUrl ?? t.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full bg-white px-4 py-2 text-black"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Open on YouTube
+                  </a>
+                </div>
+              ) : (
+                <div className="relative aspect-video group-hover:opacity-90 transition-opacity duration-300">
+                  {thumbnail && !broken[t.id] ? (
+                    thumbnail.startsWith("blob:") ||
+                    thumbnail.startsWith("data:") ? (
+                      // plain img for blob/data URLs
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={thumbnail}
+                        alt={t.title}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <Image
+                        src={thumbnail}
+                        alt={t.title}
+                        fill
+                        className="object-cover"
+                        sizes="400px"
+                        onError={() =>
+                          setBroken((s) => ({ ...s, [t.id]: true }))
+                        }
+                      />
+                    )
+                  ) : (
+                    <div className="relative aspect-video flex items-center justify-center bg-muted/20">
+                      <div className="text-muted-foreground">No image</div>
+                    </div>
+                  )}
+                  {canOpen && !isActive && (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="rounded-full bg-white/90 p-3 shadow-lg">
+                        <Play className="h-5 w-5 text-black" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
               <CardHeader>
@@ -107,6 +195,7 @@ export function TutorialsClient({ tutorials }: { tutorials: Tutorial[] }) {
                   <Link
                     href={`/tutorials/${t.slug}`}
                     className="hover:text-primary"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {t.title}
                   </Link>

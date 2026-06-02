@@ -22,13 +22,18 @@ export default function AboutPage() {
         <Card className="glass">
           <CardContent className="p-8 prose prose-lg dark:prose-invert max-w-none">
             <p>
-              I&apos;m <strong>Sabin Timalsina</strong>, a front-end developer specializing in React and Next.js.
-              I combine clean code with premium UI design to build experiences that impress recruiters,
-              clients, and students alike.
+              I&apos;m <strong>Sabin Timalsina</strong>, a web developer, data analyst, and graphics designer.
+              I build responsive, user-friendly websites and digital experiences using React, JavaScript,
+              HTML, CSS, Tailwind, and Material UI.
             </p>
             <p>
-              Beyond development, I conduct training programs and create tutorials that make complex
-              topics accessible. My mission is to bridge the gap between learning and industry-ready skills.
+              I have worked on school management systems, educational websites, expense trackers,
+              weather apps, and business websites. I combine technical development with creative design
+              to deliver products that are both functional and visually appealing.
+            </p>
+            <p>
+              Currently pursuing a BSc CSIT degree, I also create learning resources, teach students,
+              and support teams through robotics training, workshops, and collaborative projects.
             </p>
           </CardContent>
         </Card>
@@ -52,10 +57,10 @@ export default function AboutPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {[
-          { icon: GraduationCap, title: "Education", desc: "Computer Science with focus on web technologies and UI/UX." },
-          { icon: Briefcase, title: "Internship", desc: "Front-end internship building production React applications." },
-          { icon: Users, title: "Teaching", desc: "120+ students trained through bootcamps and workshops." },
-          { icon: Target, title: "Vision", desc: "Empower developers in Nepal with world-class web skills." },
+          { icon: GraduationCap, title: "Education", desc: "Currently pursuing BSc CSIT with a focus on full-stack web development and data analysis." },
+          { icon: Briefcase, title: "Experience", desc: "Built responsive websites, school systems, and business solutions while working as a computer instructor." },
+          { icon: Users, title: "Training", desc: "Delivered robotics training and developer workshops to students and learner groups." },
+          { icon: Target, title: "Achievements", desc: "Hackathon shortlisted, intern-certified, and experienced in team management." },
         ].map((item) => (
           <Card key={item.title} className="glass">
             <CardHeader>

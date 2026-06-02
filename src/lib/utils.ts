@@ -14,6 +14,62 @@ export function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+function extractYouTubeSrc(source: string): string | null {
+  const iframeMatch = source.match(/src=["']([^"']+)["']/i);
+  if (iframeMatch) return iframeMatch[1];
+  return null;
+}
+
+export function getYouTubeVideoId(url?: string) {
+  if (!url) return null;
+  const candidate = extractYouTubeSrc(url) ?? url;
+
+  try {
+    const parsed = new URL(candidate);
+    const hostname = parsed.hostname.toLowerCase();
+    const pathname = parsed.pathname.replace(/\/+$/, "");
+
+    if (hostname.includes("youtu.be")) {
+      return pathname.slice(1);
+    }
+    if (hostname.includes("youtube.com")) {
+      if (pathname.startsWith("/watch")) {
+        return parsed.searchParams.get("v");
+      }
+      if (pathname.startsWith("/embed/")) {
+        return pathname.split("/embed/")[1];
+      }
+      if (pathname.startsWith("/shorts/")) {
+        return pathname.split("/shorts/")[1];
+      }
+      if (pathname.startsWith("/v/")) {
+        return pathname.split("/v/")[1];
+      }
+      return parsed.searchParams.get("v");
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function getYouTubeWatchUrl(source?: string) {
+  const id = getYouTubeVideoId(source);
+  return id ? `https://www.youtube.com/watch?v=${id}` : null;
+}
+
+export function getYouTubeEmbedUrl(source?: string) {
+  const id = getYouTubeVideoId(source);
+  if (!id) return null;
+  const params = new URLSearchParams({
+    rel: "0",
+    modestbranding: "1",
+    playsinline: "1",
+    controls: "1",
+  });
+  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+}
+
 export function formatDate(date: string | Date): string {
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",

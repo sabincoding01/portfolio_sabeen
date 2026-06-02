@@ -16,10 +16,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { slugify } from "@/lib/utils";
+import { getYouTubeVideoId, slugify } from "@/lib/utils";
 import { TUTORIAL_CATEGORIES } from "@/lib/constants";
 import type { Tutorial } from "@/types";
 import { Plus } from "lucide-react";
+
+function getYouTubeThumbnail(url?: string) {
+  const id = getYouTubeVideoId(url);
+  return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
+}
 
 export default function AdminTutorialsPage() {
   const { items, loading, create, update, remove } = useFirestoreCrud<Tutorial>(
@@ -39,6 +44,9 @@ export default function AdminTutorialsPage() {
     likes: 0,
     publishedAt: new Date().toISOString().split("T")[0],
   });
+
+  const youTubeThumbnail = getYouTubeThumbnail(form.videoUrl);
+  const thumbnailPreview = form.thumbnail || youTubeThumbnail;
 
   return (
     <div>
@@ -132,11 +140,65 @@ export default function AdminTutorialsPage() {
               </select>
             </div>
             <div>
-              <Label>Video URL</Label>
-              <Input
+              <Label>
+                {form.type === "youtube"
+                  ? "YouTube URL or embed code"
+                  : "Video URL"}
+              </Label>
+              <Textarea
                 value={form.videoUrl ?? ""}
-                onChange={(e) => setForm({ ...form, videoUrl: e.target.value })}
+                rows={3}
+                onChange={(e) => {
+                  const url = e.target.value;
+                  const nextForm = {
+                    ...form,
+                    videoUrl: url || undefined,
+                  };
+                  if (form.type === "youtube" && !form.thumbnail) {
+                    const thumb = getYouTubeThumbnail(url);
+                    if (thumb) {
+                      nextForm.thumbnail = thumb;
+                    }
+                  }
+                  setForm(nextForm);
+                }}
               />
+              {form.type === "youtube" && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Paste a YouTube watch URL or the full iframe embed code. The
+                    app will play the embedded video and derive the thumbnail
+                    from the YouTube source.
+                  </p>
+                  {thumbnailPreview ? (
+                    <div className="flex flex-col gap-2">
+                      <img
+                        src={thumbnailPreview}
+                        alt="Thumbnail preview"
+                        className="h-24 w-full rounded-md object-cover"
+                      />
+                      {!form.thumbnail && youTubeThumbnail && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const thumb = getYouTubeThumbnail(form.videoUrl);
+                            if (thumb) {
+                              setForm({ ...form, thumbnail: thumb });
+                            }
+                          }}
+                        >
+                          Use YouTube thumbnail
+                        </Button>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Enter a valid YouTube URL to preview a thumbnail.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
             <div>
               <Label>Thumbnail</Label>
