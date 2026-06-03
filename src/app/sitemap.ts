@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { SITE, NAV_LINKS } from "@/lib/constants";
 import { getBlogPosts, getProjects, getTutorials } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = SITE.url;
   const staticPages = NAV_LINKS.map((link) => ({
