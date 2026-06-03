@@ -231,7 +231,7 @@ export default function AdminTutorialsPage() {
                     String(form.thumbnail).startsWith("data:"))
                 ) {
                   return alert(
-                    "Please upload the image to Firebase Storage or provide a public URL instead of a local preview.",
+                    "Please upload the image or provide a public URL. Local previews cannot be saved.",
                   );
                 }
                 const data = {

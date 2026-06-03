@@ -151,47 +151,7 @@ export const seedAchievements: Achievement[] = [
   },
 ];
 
-export const seedTutorials: Tutorial[] = [
-  {
-    id: "1",
-    slug: "react-hooks-complete-guide",
-    title: "React Hooks — Complete Guide",
-    description: "Master useState, useEffect, useMemo, useCallback, and custom hooks.",
-    type: "youtube",
-    category: "React",
-    videoUrl: "https://youtube.com/watch?v=example",
-    thumbnail: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&q=80",
-    views: 1250,
-    likes: 89,
-    featured: true,
-    publishedAt: "2025-03-10",
-  },
-  {
-    id: "2",
-    slug: "javascript-es6-cheatsheet",
-    title: "JavaScript ES6+ Cheatsheet",
-    description: "PDF notes covering modern JavaScript syntax and patterns.",
-    type: "pdf",
-    category: "JavaScript",
-    pdfUrl: "/notes/javascript-es6.pdf",
-    views: 890,
-    likes: 56,
-    featured: true,
-    publishedAt: "2025-02-20",
-  },
-  {
-    id: "3",
-    slug: "tailwind-css-masterclass",
-    title: "Tailwind CSS Masterclass",
-    description: "Build responsive UIs faster with utility-first CSS.",
-    type: "article",
-    category: "HTML/CSS",
-    content: "## Introduction\n\nTailwind CSS revolutionizes how we style components...",
-    views: 640,
-    likes: 42,
-    publishedAt: "2025-01-15",
-  },
-];
+export const seedTutorials: Tutorial[] = [];
 
 export const seedBlogPosts: BlogPost[] = [
   {
