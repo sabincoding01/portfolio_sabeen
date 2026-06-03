@@ -6,6 +6,8 @@ import {
   generateContributionGrid,
 } from "@/lib/github";
 
+export const dynamic = "force-dynamic";
+
 const USERNAME = process.env.NEXT_PUBLIC_GITHUB_USERNAME ?? "sabintimalsina";
 
 export async function GET() {
